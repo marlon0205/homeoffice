@@ -1,0 +1,53 @@
+/* Dark Mode Stile */
+body.dark-mode {
+    --primary-color: #4CAF50; /* Grün für Dark Mode */
+    --secondary-color: #555;
+    --text-color: #e0e0e0;
+    --background-color: #1a1a1a;
+    --card-background: #2a2a2a;
+    --border-color: #444;
+    --hover-color: #3a3a3a;
+    --approved-color: #4CAF50; /* Grün */
+    --pending-color: #FFEB3B; /* Gelb */
+    --rejected-color: #F44336; /* Rot */
+}
+
+.dark-mode header {
+    background-color: var(--primary-color);
+}
+
+.dark-mode .auth-form-container,
+.dark-mode .controls,
+.dark-mode .calendar-grid,
+.dark-mode .request-form,
+.dark-mode .admin-panel,
+.dark-mode .calendar-day {
+    background-color: var(--card-background);
+    border-color: var(--border-color);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+}
+
+.dark-mode .auth-form-container input,
+.dark-mode .request-form input,
+.dark-mode .admin-panel input,
+.dark-mode .admin-panel select {
+    background-color: #3a3a3a;
+    color: var(--text-color);
+    border-color: var(--border-color);
+}
+
+.dark-mode .auth-form-container button,
+.dark-mode .request-form button,
+.dark-mode .admin-panel button,
+.dark-mode nav button {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.dark-mode .homeoffice-entry {
+    color: black; /* Kontrastreich im Dark Mode */
+}
+
+.dark-mode .homeoffice-entry.half-day {
+    color: white;
+}

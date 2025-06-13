@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <title>Homeoffice Kalender</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/dark-mode.css" id="theme-link">
+</head>
+<body>
+<header>
+    <div class="container">
+        <h1>Homeoffice Kalender</h1>
+        <nav>
+            <button id="toggleTheme" class="theme-toggle-btn">Theme wechseln</button>
+            <button id="logoutBtn" class="logout-btn hidden">Logout</button>
+        </nav>
+    </div>
+</header>
+
+<main class="container">
+    <section id="auth-section">
+        <div class="auth-form-container">
+            <h2>Login mit Authentik</h2>
+            <button id="loginWithAuthentikBtn" class="authentik-login-btn">
+                Login mit Authentik
+            </button>
+            <p class="small-text">Sie werden zu Authentik weitergeleitet für den Login.</p>
+        </div>
+    </section>
+
+    <section id="app-section" class="hidden">
+        <div class="calendar-container">
+            <div class="controls">
+                <button id="prevMonth">&lt;</button>
+                <h2 id="currentMonthYear"></h2>
+                <button id="nextMonth">&gt;</button>
+            </div>
+            <div id="calendar" class="calendar-grid"></div>
+        </div>
+
+        <div class="request-form">
+            <h3>Homeoffice beantragen</h3>
+            <input type="date" id="requestDateInput" required>
+            <label for="halfDayCheckbox">
+                <input type="checkbox" id="halfDayCheckbox"> Halbtags
+            </label>
+            <button id="submitRequestBtn">Antrag stellen</button>
+        </div>
+
+        <div id="admin-panel" class="hidden">
+            <h3>Admin Panel (Ausbilder)</h3>
+            <div class="group-settings">
+                <h4>Gruppenverwaltung</h4>
+                <select id="groupSelect"></select>
+                <input type="number" id="groupMaxHoDays" placeholder="Max HO-Tage Gruppe">
+                <button id="saveGroupSettings">Speichern</button>
+            </div>
+            <div class="user-settings">
+                <h4>Benutzer-Regelungen</h4>
+                <select id="userSelect"></select>
+                <input type="number" id="userMaxHoDays" placeholder="Max HO-Tage Azubi">
+                <button id="saveUserSettings">Speichern</button>
+            </div>
+            <h4>Offene Homeoffice-Anträge</h4>
+            <ul id="pendingRequestsList">
+            </ul>
+        </div>
+    </section>
+
+    <!-- Home Office Request Popup -->
+    <div id="requestPopup" class="popup">
+        <div class="popup-content">
+            <span class="close-popup">&times;</span>
+            <h3>Home Office Antrag</h3>
+            <form id="requestForm">
+                <div class="form-group">
+                    <label for="requestDate">Datum:</label>
+                    <input type="date" id="requestDate" name="requestDate" required>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="halfDay" name="halfDay">
+                        Halbtags
+                    </label>
+                </div>
+                <button type="submit" class="submit-btn">Antrag stellen</button>
+            </form>
+        </div>
+    </div>
+</main>
+
+<footer>
+    <div class="container">
+        <p>&copy; 2025 Deine Firma - Homeoffice Kalender</p>
+    </div>
+</footer>
+
+<script src="/js/main.js"></script>
+<script src="/js/calendar.js"></script>
+</body>
+</html>
