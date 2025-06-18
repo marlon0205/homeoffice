@@ -1,310 +1,963 @@
-/* Globale Stile, Responsiveness, etc. */
 :root {
-    --primary-color: #007bff;
-    --secondary-color: #6c757d;
-    --text-color: #333;
-    --background-color: #f8f9fa;
-    --card-background: #fff;
-    --border-color: #ddd;
-    --hover-color: #e2e6ea;
-    --approved-color: #28a745;
-    --pending-color: #ffc107;
-    --rejected-color: #dc3545;
+    --primary-color: #00122a; /* Dunkelblau */
+    --secondary-color: #edeb00; /* Gelb */
+    --text-color-light: #333;
+    --text-color-dark: #eee;
+    --background-color-light: #f4f7f6;
+    --background-color-dark: #1a202c;
+    --card-background-light: #ffffff;
+    --card-background-dark: #2d3748;
+    --border-color-light: #e2e8f0;
+    --border-color-dark: #4a5568;
+    --glow-color: rgba(237, 235, 0, 0.5); /* Gelber Glow */
+    --accepted-color: #4CAF50; /* Grün */
+    --pending-color: #FFA500; /* Orange */
+    --rejected-color: #F44336; /* Rot */
+    --past-day-color: #a0aec0; /* Grau für vergangene Tage */
+    --current-day-color: #00122a; /* Dunkelblau für aktuellen Tag */
+    --hover-color-light: #f0f4f8;
+    --hover-color-dark: #414a5b;
 }
 
+/* Base Styles */
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: var(--background-color);
-    color: var(--text-color);
     transition: background-color 0.3s, color 0.3s;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
+/* Light Mode */
+body.light-mode {
+    background-color: var(--background-color-light);
+    color: var(--text-color-light);
 }
 
-header {
-    background-color: var(--primary-color);
+body.light-mode .navbar,
+body.light-mode .card,
+body.light-mode .modal-content {
+    background-color: var(--card-background-light);
+    border: 1px solid var(--border-color-light);
+}
+
+body.light-mode .dropdown,
+body.light-mode .input-field,
+body.light-mode .group-max-days,
+body.light-mode .azubi-max-days {
+    background-color: #f8f8f8;
+    border: 1px solid var(--border-color-light);
+    color: var(--text-color-light);
+}
+
+body.light-mode .calendar-day.current-day {
+    background-color: var(--current-day-color);
     color: white;
-    padding: 15px 0;
-    text-align: center;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
-header h1 {
-    margin: 0;
-    padding-bottom: 10px;
+body.light-mode .calendar-day.current-day .day-number {
+    background-color: white; /* Number color in current day */
+    color: var(--current-day-color);
 }
 
-nav button {
-    background-color: var(--secondary-color);
+/* Dark Mode */
+body.dark-mode {
+    background-color: var(--background-color-dark);
+    color: var(--text-color-dark);
+}
+
+body.dark-mode .navbar,
+body.dark-mode .card,
+body.dark-mode .modal-content {
+    background-color: var(--card-background-dark);
+    border: 1px solid var(--border-color-dark);
+}
+
+body.dark-mode .dropdown,
+body.dark-mode .input-field,
+body.dark-mode .group-max-days,
+body.dark-mode .azubi-max-days {
+    background-color: #3f4756;
+    border: 1px solid var(--border-color-dark);
+    color: var(--text-color-dark);
+}
+
+body.dark-mode .calendar-day.current-day {
+    background-color: var(--current-day-color);
     color: white;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    margin-left: 10px;
 }
 
-nav button:hover {
-    background-color: darken(var(--secondary-color), 10%);
+body.dark-mode .calendar-day.current-day .day-number {
+    background-color: white; /* Number color in current day */
+    color: var(--current-day-color);
 }
 
-.auth-form-container {
-    background-color: var(--card-background);
-    padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    margin: 50px auto;
-    max-width: 400px;
-    text-align: center;
-}
-
-.auth-form-container input[type="text"],
-.auth-form-container input[type="password"],
-.auth-form-container input[type="email"] {
-    width: calc(100% - 20px);
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-}
-
-.auth-form-container button {
-    background-color: var(--primary-color);
-    color: white;
-    padding: 12px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-.auth-form-container button:hover {
-    background-color: darken(var(--primary-color), 10%);
-    transform: translateY(-2px);
-}
-
-.hidden {
-    display: none !important;
-}
-
-/* Kalender-Stile */
-.controls {
+/* Navbar */
+.navbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin: 20px 0;
+    padding: 1rem 2rem;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 }
 
-.controls button {
-    padding: 8px 16px;
-    background-color: #2196F3;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-.controls button:hover {
-    background-color: #1976D2;
-}
-
-#currentMonthYear {
-    font-size: 1.2em;
+.navbar-brand {
+    font-size: 1.8rem;
     font-weight: bold;
+    color: var(--primary-color);
+}
+
+body.dark-mode .navbar-brand {
+    color: var(--secondary-color);
+    text-shadow: 0 0 8px var(--glow-color);
+}
+
+.navbar-auth {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+#loggedInUser {
+    font-weight: 600;
+}
+
+/* Buttons */
+.btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.2s ease-in-out;
+    background-color: var(--primary-color);
+    color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.btn.primary-btn {
+    background-color: var(--secondary-color);
+    color: var(--primary-color);
+}
+
+.btn.primary-btn:hover {
+    box-shadow: 0 0 15px var(--glow-color);
+    transform: translateY(-2px);
+}
+
+.btn.accept-btn {
+    background-color: var(--accepted-color);
+    color: white;
+}
+
+.btn.reject-btn {
+    background-color: var(--rejected-color);
+    color: white;
+}
+
+.btn.icon-btn {
+    background: none;
+    border: none;
+    padding: 0.5rem;
+    font-size: 1.2rem;
+    color: var(--text-color-light);
+    box-shadow: none;
+}
+
+body.dark-mode .btn.icon-btn {
+    color: var(--text-color-dark);
+}
+
+.btn.icon-btn:hover {
+    color: var(--primary-color);
+    transform: scale(1.1);
+    background: none;
+    box-shadow: none;
+}
+
+body.dark-mode .btn.icon-btn:hover {
+    color: var(--secondary-color);
+}
+
+.theme-toggle {
+    background: none;
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color);
+    padding: 0.5rem;
+    border-radius: 10px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+}
+
+body.dark-mode .theme-toggle {
+    border: 1px solid var(--secondary-color);
+    color: var(--secondary-color);
+}
+
+.theme-toggle .icon {
+    position: absolute;
+    transition: transform 0.3s ease;
+}
+
+.theme-toggle .sun-icon {
+    transform: translateX(0);
+}
+
+.theme-toggle .moon-icon {
+    transform: translateX(100%);
+}
+
+body.dark-mode .theme-toggle .sun-icon {
+    transform: translateX(-100%);
+}
+
+body.dark-mode .theme-toggle .moon-icon {
+    transform: translateX(0);
+}
+
+
+/* Dropdowns and Inputs */
+.dropdown, .input-field, .group-max-days, .azubi-max-days {
+    padding: 0.7rem 1rem;
+    border-radius: 10px;
+    font-size: 1rem;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s;
+}
+
+.dropdown:focus, .input-field:focus, .group-max-days:focus, .azubi-max-days:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(0, 18, 42, 0.2);
+}
+
+body.dark-mode .dropdown:focus, body.dark-mode .input-field:focus, body.dark-mode .group-max-days:focus, body.dark-mode .azubi-max-days:focus {
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 0 3px rgba(237, 235, 0, 0.2);
+}
+
+
+/* Main Layout */
+.main-container {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.calendar-settings {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.available-days {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+body.dark-mode .available-days {
+    color: var(--secondary-color);
+}
+
+.content-section {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+/* Cards (for calendar, sidebar, admin section) */
+.card {
+    background-color: var(--card-background-light);
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    border: 1px solid var(--border-color-light);
+}
+
+body.dark-mode .card {
+    background-color: var(--card-background-dark);
+    border: 1px solid var(--border-color-dark);
+}
+
+/* Calendar */
+.calendar-container {
+    flex: 2;
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
+    /* height: 600px;  Diese feste Höhe wird jetzt per JS dynamisch gesetzt */
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.calendar-header h2 {
+    margin: 0;
+    font-size: 1.8rem;
+    color: var(--primary-color);
+}
+
+body.dark-mode .calendar-header h2 {
+    color: var(--secondary-color);
+}
+
+.calendar-header .nav-button {
+    background: none;
+    border: none;
+    font-size: 1.8rem;
+    cursor: pointer;
+    color: var(--primary-color);
+    transition: color 0.2s;
+}
+
+body.dark-mode .calendar-header .nav-button {
+    color: var(--secondary-color);
+}
+
+.calendar-header .nav-button:hover {
+    color: var(--secondary-color);
+    transform: scale(1.1);
+}
+
+body.dark-mode .calendar-header .nav-button:hover {
+    color: var(--primary-color);
 }
 
 .calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     gap: 5px;
-    margin: 20px 0;
+    flex-grow: 1;
+    /* Angepasste Zeilendefinition: */
+    grid-template-rows: auto repeat(auto-fit, 1fr); /* Erste Zeile auto, dann flexibel füllende Zeilen */
+    align-content: start; /* Elemente an den Anfang des Grids ausrichten */
+    height: 100%; /* Bugfix: Grid soll die volle Höhe seines Containers nutzen */
 }
 
-.calendar-day-header {
+.day-name {
     text-align: center;
     font-weight: bold;
-    padding: 10px;
-    background-color: #f0f0f0;
+    padding: 0.5rem 0;
+    color: var(--primary-color);
+    align-self: end; /* Fix: Nach unten ausrichten, für besseres Layout */
+    grid-row: 1; /* Sicherstellen, dass Tagesnamen in der ersten Reihe sind */
+}
+
+body.dark-mode .day-name {
+    color: var(--secondary-color);
 }
 
 .calendar-day {
-    text-align: center;
-    padding: 10px;
-    border: 1px solid #ddd;
-    cursor: default;
-}
-
-.calendar-day.clickable {
+    padding: 0.5rem;
+    border-radius: 8px;
+    min-height: 80px; /* Mindesthöhe für die Zellen */
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    background-color: var(--card-background-light);
+    border: 1px solid var(--border-color-light);
+    position: relative;
     cursor: pointer;
-    background-color: #fff;
-    transition: background-color 0.2s;
+    transition: transform 0.2s, box-shadow 0.2s;
+    /* Bugfix: Vertikale Ausrichtung des Inhalts innerhalb der Zelle */
+    justify-content: flex-start;
+    align-items: flex-start;
+    overflow: hidden; /* Sicherstellen, dass Inhalte innerhalb der Zelle bleiben */
 }
 
-.calendar-day.clickable:hover {
-    background-color: #e3f2fd;
+body.dark-mode .calendar-day {
+    background-color: var(--card-background-dark);
+    border: 1px solid var(--border-color-dark);
 }
 
-.calendar-day.disabled {
-    background-color: #f5f5f5;
-    color: #999;
+.calendar-day:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+body.dark-mode .calendar-day:hover {
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.calendar-day .day-number {
+    font-weight: bold;
+    font-size: 1.1rem;
+    padding: 0.2rem 0.5rem;
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 5px;
+    align-self: flex-start;
+}
+
+.calendar-day.empty-day {
+    background-color: transparent;
+    border: none;
+    cursor: default;
+    box-shadow: none;
+}
+.calendar-day.empty-day:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+
+.calendar-day.past-day {
+    background-color: var(--past-day-color);
+    color: #666;
+    opacity: 0.7;
     cursor: not-allowed;
 }
 
-.calendar-day.empty {
-    background-color: #f9f9f9;
+body.dark-mode .calendar-day.past-day {
+    background-color: #3b424e;
+    color: #bbb;
 }
 
-.homeoffice-entry {
-    background-color: var(--pending-color); /* Standard für PENDING */
+.calendar-day.past-day .day-number {
+    background-color: #8c98a9;
+}
+
+.calendar-day.current-day {
+    background-color: var(--primary-color);
     color: white;
-    padding: 3px 6px;
-    border-radius: 3px;
-    font-size: 0.8em;
-    margin-top: 5px;
-    opacity: 0.9;
-    transition: opacity 0.3s ease;
+    border: 2px solid var(--secondary-color);
+    box-shadow: 0 0 15px var(--glow-color);
 }
 
-.homeoffice-entry.approved {
-    background-color: var(--approved-color);
-}
-
-.homeoffice-entry.rejected {
-    background-color: var(--rejected-color);
-}
-
-.homeoffice-entry.half-day {
-    background-color: #8c8c8c; /* Neutraler für Halbtag */
-}
-
-/* Form für Anträge */
-.request-form, .admin-panel {
-    background-color: var(--card-background);
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    margin-top: 30px;
-}
-
-.request-form h3, .admin-panel h3, .admin-panel h4 {
+.calendar-day.current-day .day-number {
+    background-color: var(--secondary-color);
     color: var(--primary-color);
-    margin-bottom: 15px;
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 10px;
 }
 
-.request-form input[type="date"],
-.request-form input[type="checkbox"],
-.request-form button {
-    margin-bottom: 10px;
+.homeoffice-entries {
+    font-size: 0.8rem;
+    margin-top: 5px;
+    flex-grow: 1;
+    overflow-y: auto; /* Enable scrolling for many entries */
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary-color) transparent;
 }
 
-/* Glow-Effekte (Beispiel) */
-.homeoffice-entry.pending {
-    box-shadow: 0 0 5px var(--pending-color), 0 0 10px var(--pending-color);
-}
-.homeoffice-entry.approved {
-    box-shadow: 0 0 5px var(--approved-color), 0 0 10px var(--approved-color);
+body.dark-mode .homeoffice-entries {
+    scrollbar-color: var(--secondary-color) transparent;
 }
 
-/* Responsiveness */
-@media (max-width: 768px) {
-    .calendar-grid {
-        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    }
-    header h1 {
-        font-size: 1.5em;
-    }
-    nav {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        margin-top: 10px;
-    }
+
+.homeoffice-entries::-webkit-scrollbar {
+    width: 5px;
 }
 
-/* Popup Styles */
-.popup {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
+.homeoffice-entries::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 5px;
+}
+
+body.dark-mode .homeoffice-entries::-webkit-scrollbar-thumb {
+    background: var(--secondary-color);
+}
+
+.entry {
+    background-color: rgba(0, 0, 0, 0.05);
+    padding: 3px 5px;
+    border-radius: 5px;
+    margin-bottom: 2px;
+    display: block; /* Ensure each entry is on a new line */
+}
+
+body.dark-mode .entry {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.entry.own-entry {
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: 500;
+}
+
+body.dark-mode .entry.own-entry {
+    background-color: var(--secondary-color);
+    color: var(--primary-color);
+}
+
+.entry.own-entry.pending {
+    background-color: var(--pending-color);
+    color: white;
+}
+
+/* Sidebar List */
+.sidebar-list {
+    flex: 1;
+    min-width: 280px;
+    display: flex;
+    flex-direction: column;
+    /* height: 600px;  Diese feste Höhe wird jetzt per JS dynamisch gesetzt */
+}
+
+.list-header {
+    margin-bottom: 1rem;
+}
+
+.list-content {
+    flex-grow: 1;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary-color) transparent;
+}
+
+body.dark-mode .list-content {
+    scrollbar-color: var(--secondary-color) transparent;
+}
+
+.list-content::-webkit-scrollbar {
+    width: 5px;
+}
+
+.list-content::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 5px;
+}
+
+body.dark-mode .list-content::-webkit-scrollbar-thumb {
+    background: var(--secondary-color);
+}
+
+.list-item {
+    padding: 0.7rem 0.5rem;
+    border-bottom: 1px solid var(--border-color-light);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+body.dark-mode .list-item {
+    border-bottom: 1px solid var(--border-color-dark);
+}
+
+.list-item:last-child {
+    border-bottom: none;
+}
+
+.list-name {
+    font-weight: 600;
+}
+
+.list-info {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+body.dark-mode .list-info {
+    color: #bbb;
+}
+
+/* Separator for Admin Section */
+.separator {
     width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
+    height: 1px;
+    background-color: var(--border-color-light);
+    margin: 3rem 0;
+    border-radius: 10px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
 }
 
-.popup-content {
-    position: relative;
-    background-color: #fff;
-    margin: 15% auto;
-    padding: 20px;
+body.dark-mode .separator {
+    background-color: var(--border-color-dark);
+}
+
+/* Admin Section */
+.admin-section {
+    padding: 2rem;
+}
+
+.section-title {
+    font-size: 2rem;
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+body.dark-mode .section-title {
+    color: var(--secondary-color);
+}
+
+.admin-content {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+    justify-content: space-between; /* Damit die Module gleichmäßig verteilt sind */
+}
+
+.group-management-module,
+.request-management-module,
+.azubi-settings-module {
+    flex: 1;
+    min-width: 300px;
+    max-width: calc(33.33% - 1.33rem); /* Für 3 Spalten Layout mit 2rem gap (32px) */
+    box-sizing: border-box; /* Padding und Border werden in die Breite einberechnet */
+}
+
+/* Anpassung für kleinere Bildschirme, damit sie untereinander rutschen */
+@media (max-width: 1024px) {
+    .group-management-module,
+    .request-management-module,
+    .azubi-settings-module {
+        max-width: 100%; /* Auf kleineren Bildschirmen volle Breite */
+    }
+}
+
+.group-management-module h3,
+.request-management-module h3,
+.azubi-settings-module h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+}
+
+body.dark-mode .group-management-module h3,
+body.dark-mode .azubi-settings-module h3,
+body.dark-mode .request-management-module h3 {
+    color: var(--secondary-color);
+}
+
+.group-creation {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.group-creation .input-field {
+    flex-grow: 1;
+}
+
+.group-list, .request-list, .azubi-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.group-item, .request-item, .azubi-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.8rem 1rem;
+    border: 1px solid var(--border-color-light);
+    border-radius: 10px;
+    background-color: var(--card-background-light);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
+}
+
+body.dark-mode .group-item, body.dark-mode .request-item, body.dark-mode .azubi-item {
+    border: 1px solid var(--border-color-dark);
+    background-color: var(--card-background-dark);
+}
+
+.group-name, .azubi-name {
+    font-weight: 600;
+    flex-grow: 1;
+}
+
+.azubi-name {
+    margin-right: 1rem; /* Abstand zum Input-Feld */
+}
+
+.group-actions, .azubi-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.group-max-days, .azubi-max-days {
+    width: 60px;
+    text-align: center;
+    padding: 0.5rem;
     border-radius: 8px;
-    width: 80%;
-    max-width: 400px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.close-popup {
-    position: absolute;
-    right: 15px;
-    top: 10px;
-    font-size: 24px;
-    cursor: pointer;
+.azubi-actions label {
+    font-size: 0.9rem;
+    color: #666;
+    white-space: nowrap; /* Verhindert Zeilenumbruch bei Label */
+}
+
+body.dark-mode .azubi-actions label {
+    color: #bbb;
+}
+
+
+.request-info {
+    flex-grow: 1;
+}
+
+.request-user {
+    font-weight: 600;
+    display: block;
+    margin-bottom: 0.2rem;
+}
+
+.request-date, .request-type {
+    font-size: 0.9rem;
     color: #666;
 }
 
-.close-popup:hover {
-    color: #000;
+body.dark-mode .request-date, body.dark-mode .request-type {
+    color: #bbb;
 }
 
-.form-group {
-    margin-bottom: 15px;
+.request-actions {
+    display: flex;
+    flex-direction: column; /* Anordnen der Elemente untereinander */
+    gap: 0.5rem; /* Abstand zwischen den Elementen */
+    align-items: flex-end; /* Elemente rechtsbündig ausrichten */
+    flex-shrink: 0; /* Verhindert Schrumpfung, wenn Platz eng wird */
+    margin-left: 1rem; /* Abstand zur Antragsinfo */
 }
 
-.form-group label {
-    display: block;
-    margin-bottom: 5px;
-    color: #333;
+.request-actions .btn {
+    width: 100px; /* Feste Breite für die Buttons */
+    text-align: center;
+    padding: 0.5rem; /* Etwas weniger Padding für kompaktere Buttons */
+    font-size: 0.9rem; /* Etwas kleinere Schrift für kompaktere Buttons */
 }
 
-.form-group input[type="date"] {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+.warning-text {
+    color: var(--rejected-color);
+    font-weight: 600;
+    font-size: 0.85rem;
+    margin-right: 0; /* Abstand entfernen, da jetzt untereinander */
+    margin-bottom: 0.3rem; /* Abstand zum nächsten Element */
+    text-align: right; /* Warntext rechtsbündig ausrichten */
+    width: 100%; /* Nimmt volle Breite der Spalte ein */
+    animation: pulse 1.5s infinite;
 }
 
-.submit-btn {
-    width: 100%;
-    padding: 10px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 4px;
+.warning-text.hidden {
+    display: none;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
+}
+
+/* Modals */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 2000; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    backdrop-filter: blur(5px); /* Blurred background */
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background-color: var(--card-background-light);
+    margin: auto;
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    position: relative;
+    max-width: 500px;
+    width: 90%;
+    border: 1px solid var(--border-color-light);
+}
+
+body.dark-mode .modal-content {
+    background-color: var(--card-background-dark);
+    border: 1px solid var(--border-color-dark);
+}
+
+.close-button {
+    color: #aaa;
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 28px;
+    font-weight: bold;
     cursor: pointer;
-    font-size: 16px;
 }
 
-.submit-btn:hover {
-    background-color: #45a049;
+.close-button:hover,
+.close-button:focus {
+    color: var(--primary-color);
+    text-decoration: none;
+    transform: scale(1.1);
 }
 
-/* Calendar Day Clickable Style */
-.calendar-day.clickable {
-    cursor: pointer;
-    transition: background-color 0.2s;
+body.dark-mode .close-button:hover {
+    color: var(--secondary-color);
 }
 
-.calendar-day.clickable:hover {
-    background-color: #e3f2fd;
+.modal-content h2 {
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+body.dark-mode .modal-content h2 {
+    color: var(--secondary-color);
+}
+
+.modal-content form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.modal-content label {
+    font-weight: 600;
+    margin-top: 0.5rem;
+}
+
+.user-list-assignment {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid var(--border-color-light);
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+body.dark-mode .user-list-assignment {
+    border: 1px solid var(--border-color-dark);
+}
+
+.user-assignment-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    padding: 0.3rem 0; /* Kleines Padding für bessere Optik */
+}
+
+.user-assignment-item input[type="checkbox"] {
+    margin-right: 10px;
+    width: 18px;
+    height: 18px;
+    accent-color: var(--primary-color);
+}
+
+body.dark-mode .user-assignment-item input[type="checkbox"] {
+    accent-color: var(--secondary-color);
+}
+
+/* Responsiveness */
+@media (max-width: 1024px) {
+    .content-section, .admin-content {
+        flex-direction: column;
+        align-items: center;
+    }
+    .calendar-container, .sidebar-list,
+    .group-management-module, .request-management-module, .azubi-settings-module {
+        width: 100%;
+        max-width: 600px; /* Begrenzung für bessere Lesbarkeit auf Tablets */
+    }
+}
+
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1rem;
+    }
+    .main-container {
+        padding: 1rem;
+    }
+    .header-section {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .calendar-grid {
+        grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+        font-size: 0.9rem;
+    }
+    .calendar-day {
+        min-height: 60px;
+        padding: 0.3rem;
+    }
+    .calendar-day .day-number {
+        font-size: 0.9rem;
+    }
+    .btn {
+        padding: 0.6rem 1.2rem;
+        font-size: 0.9rem;
+    }
+    .dropdown, .input-field, .group-max-days, .azubi-max-days {
+        padding: 0.5rem 0.8rem;
+        font-size: 0.9rem;
+    }
+
+    .request-actions {
+        flex-direction: column; /* Sicherstellen, dass sie auf kleinen Bildschirmen untereinander bleiben */
+        align-items: flex-end; /* Rechtsbündig auch auf kleinen Screens */
+    }
+    .request-actions .btn, .warning-text {
+        width: auto; /* Buttons und Text können ihre natürliche Breite annehmen */
+    }
+}
+
+/* Animations and Glow effects - examples */
+.btn.primary-btn:hover {
+    animation: glow-pulse 1s infinite alternate;
+}
+
+@keyframes glow-pulse {
+    from {
+        box-shadow: 0 0 10px var(--glow-color);
+    }
+    to {
+        box-shadow: 0 0 20px var(--glow-color), 0 0 30px var(--glow-color);
+    }
+}
+
+.calendar-day.current-day {
+    animation: border-glow 2s infinite alternate;
+}
+
+@keyframes border-glow {
+    from {
+        border-color: var(--secondary-color);
+        box-shadow: 0 0 10px var(--glow-color);
+    }
+    to {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 20px var(--glow-color), 0 0 30px var(--glow-color);
+    }
 }
