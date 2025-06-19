@@ -3,102 +3,215 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="_csrf" th:content="${_csrf.token}"/>
-    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
-    <title>Homeoffice Kalender</title>
-    <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="/css/dark-mode.css" id="theme-link">
+    <title>Homeoffice Kalender Demo</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
-<header>
-    <div class="container">
-        <h1>Homeoffice Kalender</h1>
-        <nav>
-            <button id="toggleTheme" class="theme-toggle-btn">Theme wechseln</button>
-            <button id="logoutBtn" class="logout-btn hidden">Logout</button>
-        </nav>
+<body class="light-mode">
+<nav class="navbar">
+    <div class="navbar-brand">Homeoffice Kalender (DEMO)</div>
+    <div class="navbar-auth">
+        <span id="loggedInUser">Hallo, Max Mustermann</span>
+        <button class="btn" onclick="toggleAuthModal()">Login/Registrieren</button>
+        <button class="btn theme-toggle" id="themeToggle">
+            <span class="icon sun-icon">☀️</span>
+            <span class="icon moon-icon">🌙</span>
+        </button>
     </div>
-</header>
+</nav>
 
-<main class="container">
-    <section id="auth-section">
-        <div class="auth-form-container">
-            <h2>Login mit Authentik</h2>
-            <button id="loginWithAuthentikBtn" class="authentik-login-btn">
-                Login mit Authentik
-            </button>
-            <p class="small-text">Sie werden zu Authentik weitergeleitet für den Login.</p>
-        </div>
-    </section>
-
-    <section id="app-section" class="hidden">
-        <div class="calendar-container">
-            <div class="controls">
-                <button id="prevMonth">&lt;</button>
-                <h2 id="currentMonthYear"></h2>
-                <button id="nextMonth">&gt;</button>
+<div class="main-container">
+    <div class="header-section">
+        <div class="calendar-settings">
+            <select id="viewMode" class="dropdown">
+                <option value="all">Alle Einträge anzeigen</option>
+                <option value="my-only">Nur eigene Einträge anzeigen</option>
+            </select>
+            <div class="available-days">
+                Verfügbar: <span id="currentWeekDays">3</span> KW |
+                <span id="nextWeekDays">2</span> NKW |
+                Max: <span id="maxDaysPerWeek">5</span>
             </div>
-            <div id="calendar" class="calendar-grid"></div>
         </div>
+    </div>
 
-        <div class="request-form">
-            <h3>Homeoffice beantragen</h3>
-            <input type="date" id="requestDateInput" required>
-            <label for="halfDayCheckbox">
-                <input type="checkbox" id="halfDayCheckbox"> Halbtags
-            </label>
-            <button id="submitRequestBtn">Antrag stellen</button>
-        </div>
-
-        <div id="admin-panel" class="hidden">
-            <h3>Admin Panel (Ausbilder)</h3>
-            <div class="group-settings">
-                <h4>Gruppenverwaltung</h4>
-                <select id="groupSelect"></select>
-                <input type="number" id="groupMaxHoDays" placeholder="Max HO-Tage Gruppe">
-                <button id="saveGroupSettings">Speichern</button>
+    <div class="content-section">
+        <div class="calendar-container card">
+            <div class="calendar-header">
+                <button id="prevMonthBtn" class="nav-button">&lt;</button>
+                <h2 id="currentMonthYear"></h2> <button id="nextMonthBtn" class="nav-button">&gt;</button>
             </div>
-            <div class="user-settings">
-                <h4>Benutzer-Regelungen</h4>
-                <select id="userSelect"></select>
-                <input type="number" id="userMaxHoDays" placeholder="Max HO-Tage Azubi">
-                <button id="saveUserSettings">Speichern</button>
-            </div>
-            <h4>Offene Homeoffice-Anträge</h4>
-            <ul id="pendingRequestsList">
-            </ul>
-        </div>
-    </section>
+            <div class="calendar-grid" id="calendarGrid">
+                <div class="day-name">Mo</div>
+                <div class="day-name">Di</div>
+                <div class="day-name">Mi</div>
+                <div class="day-name">Do</div>
+                <div class="day-name">Fr</div>
+                <div class="day-name">Sa</div>
+                <div class="day-name">So</div>
 
-    <!-- Home Office Request Popup -->
-    <div id="requestPopup" class="popup">
-        <div class="popup-content">
-            <span class="close-popup">&times;</span>
-            <h3>Home Office Antrag</h3>
-            <form id="requestForm">
-                <div class="form-group">
-                    <label for="requestDate">Datum:</label>
-                    <input type="date" id="requestDate" name="requestDate" required>
+            </div>
+        </div>
+
+        <div class="sidebar-list card">
+            <div class="list-header">
+                <select id="listFilter" class="dropdown">
+                    <option value="today">Heute</option>
+                    <option value="this-week">Diese Woche</option>
+                    <option value="next-week">Nächste Woche</option>
+                    <option value="overview">Übersicht</option>
+                </select>
+            </div>
+            <div class="list-content" id="listContent">
+            </div>
+        </div>
+    </div>
+
+    <div class="separator"></div>
+
+    <div class="admin-section card">
+        <h2 class="section-title">Ausbilderbereich</h2>
+        <div class="admin-content">
+            <div class="group-management-module card">
+                <h3>Gruppenverwaltung</h3>
+                <div class="group-creation">
+                    <input type="text" id="newGroupName" placeholder="Gruppenname" class="input-field">
+                    <button class="btn primary-btn" onclick="createGroup()">Gruppe erstellen</button>
                 </div>
-                <div class="form-group">
-                    <label>
-                        <input type="checkbox" id="halfDay" name="halfDay">
-                        Halbtags
-                    </label>
+                <div class="group-list" id="groupList">
+                    <div class="group-item">
+                        <span class="group-name">Azubis 2024</span>
+                        <div class="group-actions">
+                            <input type="number" class="group-max-days" value="4" min="0" onchange="updateGroupMaxDays(this)">
+                            <button class="btn icon-btn" onclick="openUserAssignment(this)"><span class="icon user-icon">👥</span></button>
+                            <button class="btn icon-btn delete-btn" onclick="deleteGroup(this)"><span class="icon delete-icon">❌</span></button>
+                        </div>
+                    </div>
+                    <div class="group-item">
+                        <span class="group-name">Azubis 2025</span>
+                        <div class="group-actions">
+                            <input type="number" class="group-max-days" value="3" min="0" onchange="updateGroupMaxDays(this)">
+                            <button class="btn icon-btn" onclick="openUserAssignment(this)"><span class="icon user-icon">👥</span></button>
+                            <button class="btn icon-btn delete-btn" onclick="deleteGroup(this)"><span class="icon delete-icon">❌</span></button>
+                        </div>
+                    </div>
                 </div>
-                <button type="submit" class="submit-btn">Antrag stellen</button>
-            </form>
+            </div>
+
+            <div class="request-management-module card">
+                <h3>Anträge bearbeiten</h3>
+                <div class="request-list" id="requestList">
+                    <div class="request-item">
+                        <div class="request-info">
+                            <span class="request-user">Max Mustermann</span>
+                            <span class="request-date">19.06.2025</span>
+                            <span class="request-type">(Ganztags)</span>
+                        </div>
+                        <div class="request-actions">
+                            <span class="warning-text hidden">Überschreitet max. Tage!</span>
+                            <button class="btn accept-btn" onclick="acceptRequest(this)">Annehmen</button>
+                            <button class="btn reject-btn" onclick="rejectRequest(this)">Ablehnen</button>
+                        </div>
+                    </div>
+                    <div class="request-item">
+                        <div class="request-info">
+                            <span class="request-user">Anna Schmidt</span>
+                            <span class="request-date">20.06.2025</span>
+                            <span class="request-type">(Halbtags)</span>
+                        </div>
+                        <div class="request-actions">
+                            <span class="warning-text">Überschreitet max. Tage!</span>
+                            <button class="btn accept-btn" onclick="acceptRequest(this)">Annehmen</button>
+                            <button class="btn reject-btn" onclick="rejectRequest(this)">Ablehnen</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="azubi-settings-module card">
+                <h3>Azubi-Einstellungen</h3>
+                <div class="azubi-list" id="azubiList">
+                    <div class="azubi-item">
+                        <span class="azubi-name">Max Mustermann</span>
+                        <div class="azubi-actions">
+                            <label>Max HO/Woche:</label>
+                            <input type="number" class="azubi-max-days" value="3" min="0" onchange="updateAzubiMaxDays(this)">
+                        </div>
+                    </div>
+                    <div class="azubi-item">
+                        <span class="azubi-name">Anna Schmidt</span>
+                        <div class="azubi-actions">
+                            <label>Max HO/Woche:</label>
+                            <input type="number" class="azubi-max-days" value="2" min="0" onchange="updateAzubiMaxDays(this)">
+                        </div>
+                    </div>
+                    <div class="azubi-item">
+                        <span class="azubi-name">Tim Becker</span>
+                        <div class="azubi-actions">
+                            <label>Max HO/Woche:</label>
+                            <input type="number" class="azubi-max-days" value="5" min="0" onchange="updateAzubiMaxDays(this)">
+                        </div>
+                    </div>
+                    <div class="azubi-item">
+                        <span class="azubi-name">Lena Mayer</span>
+                        <div class="azubi-actions">
+                            <label>Max HO/Woche:</label>
+                            <input type="number" class="azubi-max-days" value="" placeholder="G" min="0" onchange="updateAzubiMaxDays(this)">
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-</main>
+</div>
 
-<footer>
-    <div class="container">
-        <p>&copy; 2025 Deine Firma - Homeoffice Kalender</p>
+<div id="authModal" class="modal">
+    <div class="modal-content">
+        <span class="close-button" onclick="toggleAuthModal()">&times;</span>
+        <h2>Login / Registrieren</h2>
+        <form>
+            <label for="username">Benutzername:</label>
+            <input type="text" id="username" class="input-field" required><br>
+            <label for="password">Passwort:</label>
+            <input type="password" id="password" class="input-field" required><br>
+            <button type="submit" class="btn primary-btn">Login</button>
+        </form>
     </div>
-</footer>
+</div>
 
-<script src="/js/main.js"></script>
-<script src="/js/calendar.js"></script>
+<div id="userAssignmentModal" class="modal">
+    <div class="modal-content">
+        <span class="close-button" onclick="closeUserAssignment()">&times;</span>
+        <h2>Benutzer zu Gruppe hinzufügen/entfernen</h2>
+        <div class="user-list-assignment" id="userListAssignment">
+            <div class="user-assignment-item">
+                <input type="checkbox" id="user_max" checked>
+                <label for="user_max">Max Mustermann</label>
+            </div>
+            <div class="user-assignment-item">
+                <input type="checkbox" id="user_anna">
+                <label for="user_anna">Anna Schmidt</label>
+            </div>
+            <div class="user-assignment-item">
+                <input type="checkbox" id="user_tim" checked>
+                <label for="user_tim">Tim Becker</label>
+            </div>
+        </div>
+        <button class="btn primary-btn" onclick="saveUserAssignment()">Speichern</button>
+    </div>
+</div>
+
+<div id="requestHomeofficeModal" class="modal">
+    <div class="modal-content">
+        <span class="close-button" onclick="closeRequestModal()">&times;</span>
+        <h2>Homeoffice beantragen für <span id="requestDateDisplay"></span></h2>
+        <div class="form-group">
+            <input type="checkbox" id="halfDayCheckbox">
+            <label for="halfDayCheckbox">Halbtags beantragen</label>
+        </div>
+        <button class="btn primary-btn" onclick="submitHomeofficeRequest()">Antrag stellen</button>
+    </div>
+</div>
+
+<script src="js/script.js"></script>
 </body>
 </html>
