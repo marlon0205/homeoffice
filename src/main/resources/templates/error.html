@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fehler</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f8f8;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            flex-direction: column;
+            text-align: center;
+        }
+        .error-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 90%;
+        }
+        h1 {
+            color: #d9534f; /* Rot für Fehler */
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+        a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        /* Optional: Basic Dark Mode für Fehlerseite */
+        body.dark-mode {
+            background-color: #1a202c;
+            color: #eee;
+        }
+        body.dark-mode .error-container {
+            background-color: #2d3748;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        body.dark-mode h1 {
+            color: #F44336; /* Dunkelroter Akzent */
+        }
+        body.dark-mode a {
+            color: #edeb00; /* Gelber Akzent */
+        }
+    </style>
+</head>
+<body th:class="${@environment.getProperty('spring.profiles.active') == 'dark' ? 'dark-mode' : 'light-mode'}">
+<div class="error-container">
+    <h1>Uups! Ein Fehler ist aufgetreten.</h1>
+    <p>Es gab ein Problem bei der Verarbeitung Ihrer Anfrage.</p>
+
+    <p th:if="${error}" th:text="${'Fehler: ' + error}"></p>
+    <p th:if="${status}" th:text="${'Status Code: ' + status}"></p>
+    <p th:if="${message}" th:text="${'Nachricht: ' + message}"></p>
+
+    <p th:unless="${error}">Bitte versuchen Sie es später erneut.</p>
+
+    <a href="/">Zurück zur Startseite</a>
+</div>
+</body>
+</html>

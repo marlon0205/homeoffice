@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homeoffice Kalender</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="light-mode">
+<nav class="navbar">
+    <div class="navbar-brand">Homeoffice Kalender</div>
+    <div class="navbar-auth">
+        <span id="loggedInUser" th:text="${'Hallo, ' + loggedInUser}">Hallo, Max Mustermann</span>
+
+        <form th:action="@{/logout}" method="post">
+            <button type="submit" class="btn">Logout</button>
+        </form>
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" id="csrfToken"/>
+
+        <button class="btn theme-toggle" id="themeToggle">
+            <span class="icon sun-icon">☀️</span>
+            <span class="icon moon-icon">🌙</span>
+        </button>
+    </div>
+</nav>
+
+<div class="main-container">
+    <div class="header-section">
+        <div class="calendar-settings">
+            <select id="viewMode" class="dropdown">
+                <option value="all">Alle Einträge anzeigen</option>
+                <option value="my-only">Nur eigene Einträge anzeigen</option>
+            </select>
+            <div class="available-days">
+                Verfügbar: <span id="currentWeekDays">...</span> KW |
+                <span id="nextWeekDays">...</span> NKW |
+                Max: <span id="maxDaysPerWeek">...</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-section">
+        <div class="calendar-container card">
+            <div class="calendar-header">
+                <button id="prevMonthBtn" class="nav-button">&lt;</button>
+                <h2 id="currentMonthYear"></h2> <button id="nextMonthBtn" class="nav-button">&gt;</button>
+            </div>
+            <div class="calendar-grid" id="calendarGrid">
+                <div class="day-name">Mo</div>
+                <div class="day-name">Di</div>
+                <div class="day-name">Mi</div>
+                <div class="day-name">Do</div>
+                <div class="day-name">Fr</div>
+                <div class="day-name">Sa</div>
+                <div class="day-name">So</div>
+
+            </div>
+        </div>
+
+        <div class="sidebar-list card">
+            <div class="list-header">
+                <select id="listFilter" class="dropdown">
+                    <option value="today">Heute</option>
+                    <option value="this-week">Diese Woche</option>
+                    <option value="next-week">Nächste Woche</option>
+                    <option value="overview">Übersicht</option>
+                </select>
+            </div>
+            <div class="list-content" id="listContent">
+            </div>
+        </div>
+    </div>
+
+    <div class="separator"></div>
+
+    <div class="admin-section card" sec:authorize="hasRole('AUSBILDER')">
+        <h2 class="section-title">Ausbilderbereich</h2>
+        <div class="admin-content">
+            <div class="group-management-module card">
+                <h3>Gruppenverwaltung</h3>
+                <div class="group-creation">
+                    <input type="text" id="newGroupName" placeholder="Gruppenname" class="input-field">
+                    <input type="number" id="newGroupMaxDays" placeholder="Max HO/Woche" class="input-field" value="0" min="0">
+                    <button class="btn primary-btn" onclick="createGroup()">Gruppe erstellen</button>
+                </div>
+                <div class="group-list" id="groupList">
+                </div>
+            </div>
+
+            <div class="request-management-module card">
+                <h3>Anträge bearbeiten</h3>
+                <div class="request-list" id="requestList">
+                </div>
+            </div>
+
+            <div class="azubi-settings-module card">
+                <h3>Azubi-Einstellungen</h3>
+                <div class="azubi-list" id="azubiList">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="authModal" class="modal" style="display:none;">
+    <div class="modal-content">
+        <span class="close-button" onclick="toggleAuthModal()">&times;</span>
+        <h2>Login / Registrieren</h2>
+        <p>Bitte nutzen Sie das Spring Security Login-Formular.</p>
+    </div>
+</div>
+
+<div id="userAssignmentModal" class="modal" style="display:none;">
+    <div class="modal-content">
+        <span class="close-button" onclick="closeUserAssignment()">&times;</span>
+        <h2>Benutzer zu Gruppe hinzufügen/entfernen</h2>
+        <div class="user-list-assignment" id="userListAssignment">
+        </div>
+        <button class="btn primary-btn" onclick="saveUserAssignment()">Speichern</button>
+    </div>
+</div>
+
+<div id="requestHomeofficeModal" class="modal" style="display:none;">
+    <div class="modal-content">
+        <span class="close-button" onclick="closeRequestModal()">&times;</span>
+        <h2>Homeoffice beantragen für <span id="requestDateDisplay"></span></h2>
+        <div class="form-group">
+            <input type="checkbox" id="halfDayCheckbox">
+            <label for="halfDayCheckbox">Halbtags beantragen</label>
+        </div>
+        <button class="btn primary-btn" onclick="submitHomeofficeRequest()">Antrag stellen</button>
+    </div>
+</div>
+
+<script src="/js/script.js"></script>
+
+<script th:inline="javascript">
+    // [[${#authentication.principal.authorities}]] ist eine Spring Security Thymeleaf-Funktion,
+    // um die Rollen des angemeldeten Benutzers zu erhalten.
+    // Konvertiere die Java-Collection in ein JavaScript-Array von Strings.
+    const userRoles = /*[[${#authentication.principal.authorities.![authority]}]]*/ [];
+
+    // Überprüfe, ob der Benutzer die Rolle 'AUSBILDER' hat
+    const hasAdminRole = userRoles.includes('ROLE_AUSBILDER');
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Lade Admin-Bereich nur, wenn der Benutzer ein Ausbilder ist
+        if (hasAdminRole) {
+            loadAllGroups();
+            loadPendingRequests();
+            loadAllAzubis();
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background-color: var(--background-color-light);
+      color: var(--text-color-light);
+    }
+    body.dark-mode {
+      background-color: var(--background-color-dark);
+      color: var(--text-color-dark);
+    }
+    .login-container {
+      background-color: var(--card-background-light);
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+      border: 1px solid var(--border-color-light);
+    }
+    body.dark-mode .login-container {
+      background-color: var(--card-background-dark);
+      border: 1px solid var(--border-color-dark);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+    .login-container h2 {
+      color: var(--primary-color);
+      margin-bottom: 1.5rem;
+    }
+    body.dark-mode .login-container h2 {
+      color: var(--secondary-color);
+    }
+    .login-container form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .login-container label {
+      text-align: left;
+      font-weight: 600;
+    }
+    .login-container input {
+      padding: 0.75rem;
+      border: 1px solid var(--border-color-light);
+      border-radius: 10px;
+      font-size: 1rem;
+      background-color: var(--background-color-light);
+      color: var(--text-color-light);
+    }
+    body.dark-mode .login-container input {
+      background-color: #3f4756;
+      border: 1px solid var(--border-color-dark);
+      color: var(--text-color-dark);
+    }
+    .login-container input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(0, 18, 42, 0.2);
+    }
+    body.dark-mode .login-container input:focus {
+      border-color: var(--secondary-color);
+      box-shadow: 0 0 0 3px rgba(237, 235, 0, 0.2);
+    }
+    .login-container button {
+      margin-top: 1rem;
+    }
+    .error-message {
+      color: var(--rejected-color);
+      margin-top: 1rem;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body class="light-mode">
+<div class="login-container">
+  <h2>Login</h2>
+  <div th:if="${param.error}" class="error-message">
+    Ungültiger Benutzername oder Passwort.
+  </div>
+  <div th:if="${param.logout}" class="error-message" style="color: var(--accepted-color);">
+    Sie wurden erfolgreich abgemeldet.
+  </div>
+  <form th:action="@{/login}" method="post">
+    <label for="username">Benutzername:</label>
+    <input type="text" id="username" name="username" class="input-field" required>
+
+    <label for="password">Passwort:</label>
+    <input type="password" id="password" name="password" class="input-field" required>
+
+    <button type="submit" class="btn primary-btn">Login</button>
+  </form>
+</div>
+<script>
+  // Einfacher Dark/Light-Mode Toggle für die Login-Seite
+  const body = document.body;
+  if (localStorage.getItem('theme') === 'dark') {
+    body.classList.add('dark-mode');
+  } else {
+    body.classList.add('light-mode');
+  }
+</script>
+</body>
+</html>
